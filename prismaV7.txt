@@ -11,7 +11,7 @@
 Step 1 :- Install the package npm i prisma @neondatabase/serverless @prisma/adapter-neon @prisma/client
 Step 2 :- Run the command npx prisma init 
 Step 3 :- configure the .env file with DB connection string && prisma.config.ts file as per requirement 
-prisma.config.ts
+##prisma.config.ts
 
 import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
@@ -26,4 +26,42 @@ export default defineConfig({
   },
 });
 
+Step 4 :- Create the singleton db file to handle the connection pooling
+## db.ts
 
+import { PrismaClient } from '@prisma/client';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { neonConfig } from '@neondatabase/serverless';
+import ws from "ws";
+import "dotenv/config";
+
+// 1. Tell TypeScript that 'global' can have a 'prisma' property
+declare global {
+  var prisma: PrismaClient | undefined;
+}
+
+// 2. Neon specific: needed for WebSockets in Node.js environments
+if (typeof global !== 'undefined') {
+  neonConfig.webSocketConstructor = ws;
+}
+
+const connectionString = `${process.env.DB_URL}`;
+const adapter = new PrismaNeon({ connectionString });
+const prisma = new PrismaClient({ adapter });
+
+// 4. The Singleton Logic (ONLY ONE DECLARATION)
+export const db =
+  global.prisma ||
+  new PrismaClient({
+    adapter,
+    log: ['query'],
+  });
+
+// Save to global object if we are in development
+if (process.env.NODE_ENV !== 'production') {
+  global.prisma = prisma;
+}
+
+
+Step 5 :- Design the schema according to requirements and save also migrate the schema to see the changes and tables craeted 
+Step 6 :- Now use the connection all over the application to deal with the db query calls 
