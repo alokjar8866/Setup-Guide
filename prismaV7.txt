@@ -1,0 +1,8 @@
+-- For using prisma v7 in express project we must follow the official prisma docs as the v7 is major change in their architecture (Driver-adapter) model 
+-- But in typescript environment its not properly so in this the actual working steps have been added
+
+--When setting up the prisma with serverless DB like Neon.tech, we have to configure the DB so that connection between the DB and application can be initialised.
+--After the connection DB queries like create, update,find etc is done.
+
+--But during the development we encounter problem of conection pooling means whenever we compile or save the application it create other connection laid to multiple connection.
+--This problem also is solved using the singleton db file configuring

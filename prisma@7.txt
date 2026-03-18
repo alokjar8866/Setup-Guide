@@ -1,2 +1,0 @@
--- For using prisma v7 in express project we must follow the official prisma docs 
--- But in typescript environment its not properly so in this the actual working steps have been added
