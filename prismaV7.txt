@@ -6,3 +6,24 @@
 
 --But during the development we encounter problem of conection pooling means whenever we compile or save the application it create other connection laid to multiple connection.
 --This problem also is solved using the singleton db file configuring
+
+===========================================================================================================================================
+Step 1 :- Install the package npm i prisma @neondatabase/serverless @prisma/adapter-neon @prisma/client
+Step 2 :- Run the command npx prisma init 
+Step 3 :- configure the .env file with DB connection string && prisma.config.ts file as per requirement 
+prisma.config.ts
+
+import "dotenv/config";
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+  },
+  datasource: {
+    url: env("DB_URL"),
+  },
+});
+
+
