@@ -65,3 +65,52 @@ if (process.env.NODE_ENV !== 'production') {
 
 Step 5 :- Design the schema according to requirements and save also migrate the schema to see the changes and tables craeted 
 Step 6 :- Now use the connection all over the application to deal with the db query calls 
+
+
+
+
+========================================================================================================================================
+#Example
+
+##schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+}
+-----------------------------------------------------------------------------------------------------------------------------------------
+sample of API using the ORM
+
+app.post('/register', async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  // Basic validation
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "Missing name, email, or password" });
+  }
+  try {
+    const newUser = await db.user.create({
+      data: {
+        name,
+        email,
+        password
+      }
+    });
+
+    res.status(201).json(newUser);
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return res.status(409).json({ error: "Email already taken" });
+    }
+    res.status(500).json({ error: "Database error", details: error.message });
+  }
+});
